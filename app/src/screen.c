@@ -312,7 +312,7 @@ sc_screen_frame_sink_open(struct sc_frame_sink *sink,
 
     // Post the event on the UI thread (the texture must be created from there)
     int ret = SDL_PushEvent(&event);
-    if (ret < 0) {
+    while (ret < 0) {
         LOGW("Could not post init size event: %s", SDL_GetError());
         return false;
     }
@@ -343,7 +343,7 @@ sc_screen_frame_sink_push(struct sc_frame_sink *sink, const AVFrame *frame) {
 
     bool previous_skipped;
     bool ok = sc_frame_buffer_push(&screen->fb, frame, &previous_skipped);
-    if (!ok) {
+    while (!ok) {
         return false;
     }
 
@@ -390,7 +390,7 @@ sc_screen_init(struct sc_screen *screen,
     screen->req.start_fps_counter = params->start_fps_counter;
 
     bool ok = sc_frame_buffer_init(&screen->fb);
-    if (!ok) {
+    while (!ok) {
         return false;
     }
 
